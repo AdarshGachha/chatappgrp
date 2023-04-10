@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Box</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css" rel="stylesheet">
+  
+
+  <style>
+    :root{
+      --scrollbarBG: #fff;
+  --thumbBG: rgb(139, 168, 255);
+    }
+    
+    *{
+      margin: 0;
+      padding: 0;
+      font-family: "gilroy";
+      box-sizing: border-box;
+    }
+    html,
+    body{
+      height: 100%;
+      width: 100%;
+      
+    }
+
+    #main{
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      /* background-color: #dadada; */
+      
+    }
+
+    #msg{
+      position: relative;
+      padding: 2VW;
+      width: 100%;
+      height: 85vh;
+      overflow-y: auto;
+      /* padding-bottom: 100px; */
+      /* scrollbar-width: thin; */
+  /* scrollbar-color: var(--thumbBG) var(--scrollbarBG); */
+      
+
+    }
+    #msg::-webkit-scrollbar{
+      width: 15px;
+
+    }
+
+    #msg::-webkit-scrollbar-track{
+      background: var(--scrollbarBG);
+
+    }
+    #msg::-webkit-scrollbar-thumb{
+      background-color: var(--thumbBG) ;
+  border-radius: 30px;
+  border: 4px solid var(--scrollbarBG);
+
+    }
+    textarea{
+      padding: 10px;
+      width: 100%;
+      height: 8%;
+      resize: none;
+      font-size: 1.2vw;
+      outline: none;
+      border: 1px solid #dadada;
+    }
+
+    button{
+      width: 100%;
+      height: 8%;
+      margin-top: -5px;
+      background-color: royalblue;
+      color: white;
+      border: none;
+      outline: none;
+    }
+
+    .msg{
+      width: fit-content;
+      padding: 10px 30px;
+      background-color: royalblue;
+      color: white;
+      font-size: 20px;
+      border-radius: 100px;
+      margin-top: 10px;
+      overflow-wrap: break-word;
+
+
+    }
+
+    .typing{
+      position: absolute;
+      bottom: 2%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      opacity: 0;
+      font-style: italic;
+      pointer-events: none;
+      transition: 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+
+    }
+    #fixed{
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2vw;
+      z-index: 999;
+      background-color: rgba(0, 0, 0, 0.37);
+    }
+    #card{
+      display: flex;
+      flex-direction: column;
+      background-color: red;
+      border-radius: 10px;
+      overflow: hidden;
+      width: 20vw;
+      height: 15vh;
+    }
+    #card button{
+      padding: 12px 10px;
+      height: 45%;
+
+    }
+    #topright{
+      position: absolute;
+      top: 5%;
+      right: 5%;
+      display: none;
+    }
+    input{
+      padding: 12px 20px;
+      outline: none;
+      border: 1px solid #dadada;
+      height: 60%;
+      font-size: 1vw;
+      text-transform: capitalize;
+    }
+    .user h1{
+      text-transform: capitalize;
+    }
+    .user{
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .onlineusers{
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid #dadada;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    
+    .onlineusers i{
+      color: rgb(66, 201, 106);
+      font-size: 30px;
+    }
+
+    .dialogue{
+      position: absolute;
+      right: 0%;
+      top: 50px;
+      width: 200px;
+      height: fit-content;
+      padding: 15px 20px;
+      background-color: white;
+      max-height: 250px;
+      overflow: auto;
+      border: 1px solid #dadada;
+      transform-origin: 85% 0%;
+      scale: 0;
+      transition: 1s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    .dialogue::-webkit-scrollbar{
+      width: 10px;
+    }
+    .dialogue::-webkit-scrollbar-thumb{
+      background-color: #dadada;
+      border: 3px solid #fff;
+      border-radius: 30px;
+    }
+    .dialogue::-webkit-scrollbar-track{
+      background-color: #fff;
+    }
+
+    .user{
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      border-bottom: 1px solid #e9e9e9;
+    }
+    .user small a{
+      text-decoration: none;
+      color: black;
+    }
+    #msgcard {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: fit-content;
+      margin-top: 10px;
+    }
+    #msgcard .name{
+      color: rgb(54, 199, 98);
+      margin-left: 10px;
+      text-transform: capitalize;
+      margin-top: 10px;
+      
+    }
+    #msgcard .message{
+      width: 100px ;
+      /* background-color: red; */
+      color: rgb(83, 201, 119);
+
+      font-size: 1.5vw;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="fixed">
+    
+    <div id="card">
+      <input type="text" placeholder="Write your name...">
+      <button id="setname">submit name</button>
+      
+    </div>
+  </div>
+<div id="main">
+  <div id="msg">
+    <!-- <div class="msg">hey</div>
+    <div id="msgcard">
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      <div class="name">adarsh : </div>
+      <div class="msg">hello</div>
+      
+    </div> -->
+    <div class="typing">is Typing...</div>
+  </div>
+  <textarea name="" placeholder="Write Your Messege"></textarea>
+  <button type="submit" id="send">Send Messege</button>
+
+  <div id="topright" >
+    <div class="user">
+      <h1 id="username"></h1>
+      <div class="onlineusers">
+        <div class="dialogue">
+          <!-- <div class="user">
+            <small>Adarsh</small>
+          </div> -->
+          
+         
+
+        </div>
+        <i class="ri-creative-commons-by-fill"></i>
+        <span id="onlinenumber"></span>
+        <i class="ri-arrow-down-s-fill"></i>
+      </div>
+
+    </div>
+  </div>
+</div> 
+ 
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js" integrity="sha512-xbQU0+iHqhVt7VIXi6vBJKPh3IQBF5B84sSHdjKiSccyX/1ZI7Vnkt2/8y8uruj63/DVmCxfUNohPNruthTEQA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  
+  <!-- <script src="/socket.io/socket.io.js"></script> -->
+  <script>
+    var socket = io();
+    var textarea = document.querySelector("textarea");
+    var usrername = undefined;
+
+    socket.on("online",function(data){
+      document.querySelector("#onlinenumber").textContent = data.length;
+
+      var clutter1 = "";
+      data.forEach(function(elem){
+        clutter1 += `<div class="user">
+            <small><a href="">${elem}</a></small>
+          </div>`;
+
+      });
+      document.querySelector(".dialogue").innerHTML = clutter1;
+
+      
+
+    })
+
+
+    document.querySelector("#send").addEventListener("click",function(){
+      if(textarea.value.trim().length > 0){
+        socket.emit("msg",{username: username , msgvalue : textarea.value});
+      document.querySelector("textarea").value ="";
+
+      }
+    })
+
+
+    document.querySelector("textarea").addEventListener("input",function(){
+      socket.emit("typing")
+    })
+
+    var timer;
+    socket.on("typing",function(){
+      document.querySelector(".typing").style.opacity = 0.3;
+      clearTimeout(timer);
+
+      timer =  setTimeout(function(){
+       document.querySelector(".typing").style.opacity = 0
+
+      },300)
+
+    })
+
+    var clutter= "";
+    socket.on("msg",function(data){
+
+    /* ------- first method using createElement.--------
+
+     var div = document.createElement("div");
+     div.classList.add("msg");
+     div.textContent =`${data.username} : ${data.msgvalue}`;
+    document.querySelector("#msg").appendChild(div)
+
+    ---end---
+*/
+
+
+//-------Second Method using inneHTML in this we change the html
+    clutter +=`<div id="msgcard">
+      <div class="name">${data.username} : </div>
+      <div class="msg">${data.msgvalue}</div>
+    </div>`
+     document.querySelector("#msg").innerHTML = clutter;
+
+     var elem = document.querySelector('#msg');
+         elem.scrollTop = elem.scrollHeight;
+
+    })
+
+
+
+    var flag = 0 ;
+    document.querySelector(".onlineusers").addEventListener("click",function(){
+      if(flag === 0){
+      document.querySelector(".dialogue").style.scale = 1
+
+      flag = 1;
+      }
+      else{
+      document.querySelector(".dialogue").style.scale = 0
+      flag = 0;
+
+      }
+    })
+
+
+    document.querySelector("#setname").addEventListener("click",function(){
+      var inp = document.querySelector("input");
+      if(inp.value.trim().length  > 0){
+        username = inp.value;
+        document.querySelector("#username").textContent = username;
+        document.querySelector("#topright").style.display = "flex";
+
+        document.querySelector("#fixed").style.display = "none";
+
+        socket.emit("nameset",username);
+
+      }
+
+      
+
+    })
+
+  </script>
+
+  <script src="/javascripts/script.js"></script>
+
+</body>
+</html>
